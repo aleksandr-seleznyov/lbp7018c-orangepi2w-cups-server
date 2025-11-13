@@ -45,6 +45,7 @@ RUN apt-get update -qq && \
 
 # Download Canon CAPT driver v2.71
 RUN wget https://gdlp01.c-wss.com/gds/6/0100004596/05/linux-capt-drv-v271-uken.tar.gz \
+    --no-check-certificate \
     -O /tmp/linux-capt-drv.tar.gz
 
 # Extract Canon CAPT driver
