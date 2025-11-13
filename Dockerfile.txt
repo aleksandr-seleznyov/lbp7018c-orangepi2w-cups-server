@@ -21,6 +21,10 @@ RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
     # Package management and build essentials
     dpkg \
+    ca-certificates \
+    # Printing and rendering dependencies required by Canon packages
+    cups \
+    ghostscript \
     # Core dependencies for CAPT driver
     libc6:i386 \
     libstdc++6:i386 \
