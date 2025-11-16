@@ -81,9 +81,8 @@ RUN sed -i 's/Listen localhost:631/Listen 127.0.0.1:59631/' /etc/cups/cupsd.conf
     sed -i 's/<Location \/admin\/conf>/<Location \/admin\/conf>\n  Allow All/' /etc/cups/cupsd.conf && \
     echo "DefaultEncryption Never" >> /etc/cups/cupsd.conf
 
-# Create CUPS admin user for lpadmin commands
-RUN useradd -r -G lpadmin cupsadmin && \
-    echo "cupsadmin:cupsadmin" | chpasswd
+# Add root to cupsadmin group for printer management
+RUN sudo usermod -a -G cupsadmin root
 
 # Configure ccpd with proper logging
 RUN cat > /etc/ccpd.conf << 'EOF'
