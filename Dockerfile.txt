@@ -76,7 +76,14 @@ RUN mkdir -p /var/log/CCPD && \
 # Configure CUPS minimally (only for ccpd validation, won't accept external jobs)
 RUN sed -i 's/Listen localhost:631/Listen 127.0.0.1:59631/' /etc/cups/cupsd.conf && \
     sed -i 's/Browsing On/Browsing Off/' /etc/cups/cupsd.conf && \
+    sed -i 's/<Location \/>/<Location \/>\n  Allow All/' /etc/cups/cupsd.conf && \
+    sed -i 's/<Location \/admin>/<Location \/admin>\n  Allow All\n  Require user @SYSTEM/' /etc/cups/cupsd.conf && \
+    sed -i 's/<Location \/admin\/conf>/<Location \/admin\/conf>\n  Allow All/' /etc/cups/cupsd.conf && \
     echo "DefaultEncryption Never" >> /etc/cups/cupsd.conf
+
+# Create CUPS admin user for lpadmin commands
+RUN useradd -r -G lpadmin cupsadmin && \
+    echo "cupsadmin:cupsadmin" | chpasswd
 
 # Configure ccpd with proper logging
 RUN cat > /etc/ccpd.conf << 'EOF'
