@@ -73,6 +73,11 @@ RUN mkdir -p /var/log/CCPD && \
     mkdir -p /var/ccpd && \
     chmod 755 /var/ccpd
 
+# Configure CUPS minimally (only for ccpd validation, won't accept external jobs)
+RUN sed -i 's/Listen localhost:631/Listen 127.0.0.1:59631/' /etc/cups/cupsd.conf && \
+    sed -i 's/Browsing On/Browsing Off/' /etc/cups/cupsd.conf && \
+    echo "DefaultEncryption Never" >> /etc/cups/cupsd.conf
+
 # Configure ccpd with proper logging
 RUN cat > /etc/ccpd.conf << 'EOF'
 # Canon Printer Daemon Configuration - Optimized for Performance

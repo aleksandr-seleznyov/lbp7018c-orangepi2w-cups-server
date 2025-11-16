@@ -24,7 +24,7 @@ warn() {
 
 log "=========================================="
 log "Canon CAPT Driver Container Starting"
-log "Container optimized for ccpd daemon only"
+log "Container with minimal CUPS for ccpd"
 log "=========================================="
 
 # Set timezone
@@ -33,6 +33,18 @@ if [ -n "$TZ" ]; then
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
     echo $TZ > /etc/timezone
 fi
+
+# Start minimal CUPS (only for ccpd validation, not for external jobs)
+log "Starting minimal CUPS instance for ccpd validation..."
+/usr/sbin/cupsd
+sleep 2
+
+# Verify CUPS is running
+if ! pgrep -x cupsd > /dev/null; then
+    error "Failed to start CUPS daemon"
+    exit 1
+fi
+log "CUPS daemon started on 127.0.0.1:59631 (internal only)"
 
 # Check for USB printer
 log "Checking for USB printer device..."
@@ -67,6 +79,27 @@ fi
 
 # Register printer with ccpd
 log "Registering printer with ccpd daemon..."
+
+# First register with CUPS (required for ccpd validation)
+log "Registering printer with CUPS..."
+lpadmin -p $PRINTER_NAME \
+    -P /usr/share/cups/model/CNCUPSLBP7018CCAPTK.ppd \
+    -v ccp://localhost:59787 \
+    -E 2>&1 | while read line; do
+        log "  lpadmin: $line"
+    done
+
+# Verify CUPS registration
+if lpstat -p $PRINTER_NAME > /dev/null 2>&1; then
+    log "Printer registered with CUPS successfully"
+else
+    error "Failed to register printer with CUPS"
+    lpstat -p
+    exit 1
+fi
+
+# Now register with ccpd
+log "Registering printer with ccpd..."
 ccpdadmin -p $PRINTER_NAME \
     -P /usr/share/cups/model/CNCUPSLBP7018CCAPTK.ppd \
     -o $DEVICE_PATH 2>&1 | while read line; do
