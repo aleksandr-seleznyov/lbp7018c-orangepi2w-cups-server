@@ -82,7 +82,7 @@ RUN sed -i 's/Listen localhost:631/Listen 127.0.0.1:59631/' /etc/cups/cupsd.conf
     echo "DefaultEncryption Never" >> /etc/cups/cupsd.conf
 
 # Add root to cupsadmin group for printer management
-RUN sudo usermod -a -G cupsadmin root
+RUN usermod -a -G cupsadmin root
 
 # Configure ccpd with proper logging
 RUN cat > /etc/ccpd.conf << 'EOF'
