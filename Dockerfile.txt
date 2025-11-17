@@ -85,7 +85,7 @@ RUN sed -i 's/Listen localhost:631/Listen 127.0.0.1:59631/' /etc/cups/cupsd.conf
 RUN groupadd -r cupsadmin && \
     usermod -a -G cupsadmin root && \
     groupadd -r lpadmin && \
-    usermod -a -G lpadmin root && \
+    usermod -a -G lpadmin root
 
 
 # Configure ccpd with proper logging
