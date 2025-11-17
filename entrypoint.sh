@@ -83,6 +83,7 @@ log "Registering printer with ccpd daemon..."
 # First register with CUPS (required for ccpd validation)
 log "Registering printer with CUPS..."
 lpadmin -p $PRINTER_NAME \
+    -h 127.0.0.1:59631 \
     -P /usr/share/cups/model/CNCUPSLBP7018CCAPTK.ppd \
     -v ccp://localhost:59787 \
     -E 2>&1 | while read line; do
